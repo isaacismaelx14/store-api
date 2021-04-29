@@ -1,0 +1,26 @@
+PATCH http://localhost:3001/sellers/1
+Content-Type: application/json
+
+{
+    "user_id":1,
+    "name":"Store This",
+    "description":"We have everething",
+    "direction":"",
+    "rank":0
+}
+
+### Update category
+PATCH  http://localhost:3001/categories/1
+Content-Type: application/json
+
+{
+    "category":"Cellphones"
+}
+
+### coment
+PATCH http://localhost:3001/coments/2
+Content-Type: application/json
+
+{
+    "product_id":1
+}

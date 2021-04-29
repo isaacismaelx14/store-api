@@ -1,0 +1,70 @@
+POST http://localhost:3001/sellers
+Content-Type: application/json
+
+{
+    "user_id":1,
+    "name":"Store This",
+    "description":"We have everething",
+    "direction":"",
+    "rank":0
+}
+### post user
+POST http://localhost:3001/users
+Content-Type: application/json
+
+{
+    "user_id":1,
+    "name":"Store This",
+    "description":"We have everething",
+    "direction":"",
+    "rank":0
+}
+
+
+###Post category
+POST http://localhost:3001/categories
+Content-Type: application/json
+
+{
+    "category":"Chargersswww"
+}
+
+###Post question
+POST http://localhost:3001/questions
+Content-Type: application/json
+
+{
+    "product_id":1,
+    "user_id":1,
+    "question":"What's the price of this?"
+}
+
+###Post answer
+POST http://localhost:3001/answers
+Content-Type: application/json
+
+{
+    "parent_id":1,
+    "user_id":1,
+    "answer":"It's $199.99 dollars"
+}
+###Post comment
+POST http://localhost:3001/coments/
+Content-Type: application/json
+
+{
+    "product_id":1,
+    "user_id":1,
+    "comment":"This is awesome"
+}
+###Post descriptions
+POST http://localhost:3001/descriptions/
+Content-Type: application/json
+
+{
+  "product_id": 1,
+  "color": "red",
+  "brand": "Samsung",
+  "dimensions": "10x10x10",
+  "weigth":"1lb"
+}
