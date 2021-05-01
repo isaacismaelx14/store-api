@@ -13,32 +13,32 @@ class App {
   app = express();
 
   constructor(port: number) {
-    this.PORT = process.env.PORT || port;
-    this.middlewares();
-    this.router();
+      this.PORT = process.env.PORT || port;
+      this.middlewares();
+      this.router();
   }
 
   private middlewares(): void {
-    this.app.use('/users', UsersRouter);
-    this.app.use('/products', ProductsRouter);
-    this.app.use('/sellers', SellersRouter);
-    this.app.use('/categories', CategoriesRouter);
-    this.app.use('/answers', AnsweresRouter);
-    this.app.use('/questions', QuestionsRouter);
-    this.app.use('/coments', ComentsRouter);
-    this.app.use('/descriptions', DescriptionsRouter);
+      this.app.use('/users', UsersRouter);
+      this.app.use('/products', ProductsRouter);
+      this.app.use('/sellers', SellersRouter);
+      this.app.use('/categories', CategoriesRouter);
+      this.app.use('/answers', AnsweresRouter);
+      this.app.use('/questions', QuestionsRouter);
+      this.app.use('/coments', ComentsRouter);
+      this.app.use('/descriptions', DescriptionsRouter);
   }
 
   private router(): void {
-    this.app.get('/', (_, res: express.Response) => {
-      res.send('Hello');
-    });
+      this.app.get('/', (_, res: express.Response) => {
+          res.send('Hello');
+      });
   }
 
   start(): void {
-    this.app.listen(this.PORT, () => {
-      console.log(`Server running on http://localhost:${this.PORT}`);
-    });
+      this.app.listen(this.PORT, () => {
+          console.log(`Server running on http://localhost:${this.PORT}`);
+      });
   }
 }
 
