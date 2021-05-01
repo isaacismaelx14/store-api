@@ -68,3 +68,13 @@ Content-Type: application/json
   "dimensions": "10x10x10",
   "weigth":"1lb"
 }
+
+###Login
+
+POST http://localhost:3001/users/login
+Content-Type: application/json
+
+{
+    "email":"isaacismaelx14@gmail.com",
+    "password":"134"
+}

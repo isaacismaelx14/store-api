@@ -11,18 +11,25 @@ import {
 } from '../plugins/db.types';
 
 import { Connection, createConnection } from 'mysql';
+import Errors from '../messages/errors';
+import Messages from '../messages';
+
 
 class DataBaseController {
   private isTest;
   private config: config;
   private conn: Connection;
   private table: string;
+  private errors:Errors;
+  private messages:Messages;
 
   constructor(table: string, config: config, isTest: boolean) {
       this.config = config;
       this.conn = createConnection(config);
       this.table = table;
       this.isTest = isTest;
+      this.errors = new Errors();
+      this.messages = new Messages();
   }
 
   query(query: string): Promise<unknown> {
@@ -154,21 +161,13 @@ class DataBaseController {
       const { selector, value } = await getValues[0];
 
       if (task === 'INSERT' && !value) {
-          return {
-              code: 400,
-              data: {
-                  message: `You cannot create a new data without (${value})`,
-              },
-          };
+          return this.messages.create(400, `You cannot create a new data without (${value})`);
       }
 
       const checkExist = this.checkIfValueExist(selector, value);
       console.log(value , (await checkExist));
       if (value && (await checkExist))
-          return {
-              code: 400,
-              data: { message: `This (${value}) already exist` },
-          };
+          return this.messages.create(400, `This (${value}) already exist` );
       else return { code: 200 };
   }
 
@@ -249,18 +248,15 @@ class DataBaseController {
       value: queryParam,
       table: string
   ) {
-      const errorMessage = {
-          code: 404,
-          data: { message: 'error was happened' },
-      };
+
       if (validator.code == 200) {
           const doConsult = exeQuery(
               await this.getQueryInsert(value, table, 'INSERT')
           );
           const checkResponse = await doConsult;
           if (checkResponse.affectedRows > 0)
-              return { code: 201, data: { message: 'data was created' } };
-          return errorMessage;
+              return this.messages.create(201, 'data was created');
+          return this.errors.unknowError;
       } else {
           return validator;
       }
@@ -270,8 +266,9 @@ class DataBaseController {
       const doConsult = exeQuery(`FROM ${table}`);
       const checkResponse = await doConsult;
       if (checkResponse.affectedRows > 0)
-          return { code: 200, data: { message: 'data was deleted' } };
-      return { code: 404, data: { message: 'value Not found' } };
+          return this.messages.create(200,'data was deleted');
+        
+      return this.messages.create(404,'value Not found');
   }
 
   private async taskUpdate(
@@ -286,8 +283,8 @@ class DataBaseController {
           );
           const checkResponse = await doConsult;
           if (checkResponse.affectedRows > 0)
-              return { code: 200, data: { message: 'data was update' } };
-          return { code: 404, data: { message: 'error was happened' } };
+              return this.messages.create(200, 'data was update');
+          return this.errors.unknowError;
       } else {
           return validator;
       }
@@ -326,10 +323,7 @@ class DataBaseController {
           return await this.taskUpdate(exeQuery, table, validator, value);
       default:
           console.error(`the request (${task}) Is not valid `);
-          return {
-              code: 400,
-              data: { message: `the request (${task}) Is not valid ` },
-          };
+          return this.messages.create(400,`the request (${task}) Is not valid ` );
       }
   }
 }

@@ -1,5 +1,5 @@
 import DataBase, { dataResponse, options, queryParam } from '../database';
-import Errors from '../errors';
+import Errors from '../database/messages/errors';
 import dbConfig from '../db.config';
 
 interface category {

@@ -1,6 +1,6 @@
 import Database, { dataResponse, options, queryParam } from '../database';
 import dbConfig from '../db.config';
-import Errors from '../errors';
+import Errors from '../database/messages/errors';
 interface question {
   id?: number;
   product_id: number;

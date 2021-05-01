@@ -1,5 +1,4 @@
 
-
 import {ConnectionConfig} from 'mysql';
 import { options } from './db.interfaces';
 
@@ -10,4 +9,7 @@ type queryParams = { selector: string; value: unknown };
 type task = 'SELECT' | 'UPDATE' | 'DELETE' | 'INSERT';
 type validator = { selector: string };
 
-export {config, dataOptions, queryParam, queryParams, task, validator};
+type CodeResponse = 200| 201 |400| 401 | 404 ;
+
+
+export {config, dataOptions, queryParam, queryParams, task, validator, CodeResponse};

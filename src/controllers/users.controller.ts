@@ -1,7 +1,9 @@
 import dbConfig from '../db.config';
 import Database, { dataResponse, options, queryParam } from '../database';
 import { decrypt, encrypt } from '../function/encrypt';
-import Errors from '../errors';
+import Errors from '../database/messages/errors';
+import Messages from '../database/messages/';
+import jwt from 'jsonwebtoken';
 
 interface user {
   id?: number;
@@ -29,6 +31,7 @@ interface login {
 
 const dataBase = new Database('users', dbConfig);
 const errors = new Errors();
+const messages = new Messages();
 
 const userData = (
     user: user,
@@ -80,7 +83,8 @@ class UsersController {
 
     async post(User: user): Promise<dataResponse> {
         const { birthday, email, last_names, names, password, sex, type } = User;
-        if (birthday && email && last_names && names && password && sex !== undefined && type !== undefined)
+        const userValidate = birthday && email && last_names && names && password && sex !== undefined && type !== undefined;
+        if (userValidate)
             return await dataBase.insert(userData(User, { sndEncrypt: true }), {
                 toValidate: { selector: 'email' },
             });
@@ -89,9 +93,10 @@ class UsersController {
 
     async putOrPatch(id: number, User: user): Promise<dataResponse> {
         const newData: queryParam = userData(User, { usePwd: false });
-        const { birthday, email, last_names, names, password, sex, type } = User;
+        const { birthday, email, last_names, names, sex, type } = User;
+        const userValidator = birthday || email || last_names || names || sex !== undefined || type !== undefined;
 
-        if (birthday && email && last_names && names && password && sex !== undefined && type !== undefined)
+        if (userValidator)
             return await dataBase.update(
                 newData,
                 { selector: 'id', value: id },
@@ -119,9 +124,9 @@ class UsersController {
                         { selector: 'password', value: encrypt(new_pwd) },
                         { selector: 'id', value: id }
                     );
-                return { code: 200, data: { message: 'password changed' } };
+                return messages.create(200, 'password changed');
             } else {
-                return { code: 400, data: { message: 'password not match' } };
+                return errors.passwordNotMatch;
             }
         } else {
             return errors.allNeeded;
@@ -131,15 +136,23 @@ class UsersController {
     async Login(loginData: login): Promise<dataResponse> {
         const { email, password } = loginData;
         if (email && password) {
-            const options: options = { where: { selector: 'email', value: email } };
-            const getPwdEncripted = await dataBase.select('password', options);
-            if (getPwdEncripted.data) {
-                const pwdEncryted = getPwdEncripted.data.password;
-                if (decrypt(password, pwdEncryted))
-                    return { code: 200, data: { message: true } };
-                else return { code: 401, data: {} };
-            } else {
-                return { code: 401 };
+            try {
+                const options: options = { where: { selector: 'email', value: email } };
+                const userData = await dataBase.select('password, id, email', options);
+                const { id } = userData.data;
+                const toCheckPassword = userData.data.password;
+                if (id && toCheckPassword) {
+                    console.log(id);
+                    if (decrypt(password, toCheckPassword))
+                        return messages.create(200, 'accepted');
+                    else 
+                        return errors.pwdOrEmailNoValid;
+                } else {
+                    return errors.pwdOrEmailNoValid;
+                }
+            } catch (error) {
+                console.log(error);
+                return error;
             }
         } else {
             return errors.allNeeded;

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { queryParam, validator, dataOptions } from './db.types';
+import { queryParam, validator, dataOptions, CodeResponse } from './db.types';
 
 interface dataResponse {
-    code: number;
+    code: CodeResponse;
     data?: any;
   }
   
