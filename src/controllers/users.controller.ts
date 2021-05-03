@@ -104,6 +104,7 @@ class UsersController {
         User: user,
         auth?: string
     ): Promise<dataResponse> {
+        if(User.id) return errors.idCannotChange;
         const newData: queryParam = userData(User, { usePwd: false });
         const { birthday, email, last_names, names, sex, type } = User;
         const userValidator =

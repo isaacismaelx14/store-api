@@ -35,8 +35,10 @@ class QuestionController {
     }
 
     async update(id: number, Question: question): Promise<dataResponse> {
-        const {product_id, question, user_id, star} = Question;
-        if(product_id || question || user_id || star !== undefined)
+        if(Question.id || Question.product_id || Question.user_id) return errors.idCannotChange;
+        
+        const {question, star} = Question;
+        if( question || star !== undefined)
             return await db.update(questionData(Question), {
                 selector: 'id',
                 value: id,

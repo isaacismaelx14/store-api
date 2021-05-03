@@ -36,8 +36,9 @@ class CommentsController {
     }
 
     async update(id: number, Comment: comment): Promise<dataResponse> {
-        const {comment, product_id, user_id, star} = Comment;
-        if(comment || product_id || user_id || star !== undefined)
+        if(Comment.id || Comment.user_id) return errors.idCannotChange;
+        const {comment, product_id, star} = Comment;
+        if(comment || product_id || star !== undefined)
             return await db.update(commentData(Comment), { selector: 'id', value: id });
         else return errors.allNeeded;
     }

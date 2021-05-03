@@ -40,6 +40,8 @@ class CategoriesController {
     }
 
     async update(id: number, Category: category, auth?:string): Promise<dataResponse> {
+        if(Category.id) return errors.idCannotChange;
+        
         if(auth && await jwtCtrl.checkToken(auth, {type:this.userType})){
             return await db.update(
                 categoryData(Category),

@@ -40,8 +40,9 @@ class DescriptionsController {
     }
 
     async update(id: number, Description: description): Promise<dataResponse> {
-        const {brand, color, dimensions, other, product_id} = Description;
-        if (brand|| color|| dimensions|| other|| product_id)
+        if(Description.id || Description.product_id)  return errors.idCannotChange;
+        const {brand, color, dimensions, other} = Description;
+        if (brand|| color|| dimensions|| other)
             return await db.update(descriptionData(Description), {
                 selector: 'id',
                 value: id,

@@ -43,9 +43,15 @@ class AnswersController {
         Answer: answer,
         auth?: string
     ): Promise<dataResponse> {
-        const { answer, parent_id, user_id } = Answer;
+        const check = await this.get(id);
+        const { user_id } = check.data;
+        const { answer, parent_id} = Answer;
+        
+        if(Answer.user_id || Answer.id) return errors.idCannotChange; 
+
         if (auth && await jwtCtrl.checkToken(auth, {id:user_id})) {
-            if (answer || parent_id || user_id)
+            Answer.user_id = user_id;
+            if (answer || parent_id)
                 return db.update(answerData(Answer), { selector: 'id', value: id });
             else return errors.requestEmpty;
         } else {

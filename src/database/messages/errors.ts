@@ -27,6 +27,10 @@ class Errors extends Messages {
     get notAuth():dataResponse{
         return this.create(401, 'You do not have the permissions necesary');
     }
+
+    get idCannotChange():dataResponse{
+        return this.create(401, 'You cannot change the id');
+    }
 }
 
 

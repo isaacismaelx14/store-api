@@ -52,17 +52,18 @@ class ProductsController {
     }
 
     async patch(id: number, Products: Products): Promise<dataResponse> {
+        if(Products.id || Products.seller_id) return errors.idCannotChange;
+
         const {
             about,
             category_id,
             picture_id,
             price,
-            seller_id,
             stock,
             title,
         } = Products;
 
-        if (about || category_id || picture_id || price || seller_id || stock  !== undefined || title)
+        if (about || category_id || picture_id || price || stock  !== undefined || title)
             return await db.update(productsData(Products), {
                 selector: 'id',
                 value: id,

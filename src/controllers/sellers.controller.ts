@@ -37,8 +37,9 @@ class SellersController {
     }
 
     async update(id: number, Seller: seller): Promise<dataResponse> {
-        const {description, direction, name, rank, user_id} = Seller;
-        if(description || direction || name || rank !== undefined || user_id)
+        if(Seller.id || Seller.user_id) return errors.idCannotChange;
+        const {description, direction, name, rank} = Seller;
+        if(description || direction || name || rank !== undefined )
             return await db.update(sellerData(Seller), { selector: 'id', value: id });
         else return errors.requestEmpty;
     }
