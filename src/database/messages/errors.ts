@@ -25,7 +25,7 @@ class Errors extends Messages {
     }
 
     get notAuth():dataResponse{
-        return this.create(401, '');
+        return this.create(401, 'You do not have the permissions necesary');
     }
 }
 

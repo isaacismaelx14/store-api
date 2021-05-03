@@ -3,5 +3,10 @@ DELETE http://localhost:3001/sellers/2
 
 ### Description
 DELETE http://localhost:3001/categories/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJ0eXBlIjoxLCJpYXQiOjE2MjAwNTQ5OTh9.RPEw-MFNz5UZYnygeUvLraFhp67QQLeaxN8cdAqVfm0
 ###
 DELETE http://localhost:3001/categories/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJ0eXBlIjoxLCJpYXQiOjE2MjAwNTQ5OTh9.RPEw-MFNz5UZYnygeUvLraFhp67QQLeaxN8cdAqVfm0
+###
+DELETE http://localhost:3001/answers/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJ0eXBlIjoxLCJpYXQiOjE2MjAwNTQ5OTh9.RPEw-MFNz5UZYnygeUvLraFhp67QQLeaxN8cdAqVfm0

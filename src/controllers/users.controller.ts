@@ -114,7 +114,7 @@ class UsersController {
             sex !== undefined ||
             type !== undefined;
 
-        if (auth && jwtCtrl.checkToken(auth, id)) {
+        if (auth && await jwtCtrl.checkToken(auth, {id})) {
             if (userValidator)
                 return await dataBase.update(
                     newData,
@@ -127,8 +127,10 @@ class UsersController {
         }
     }
 
-    async delete(id: number): Promise<dataResponse> {
-        return await dataBase.delete({ selector: 'id', value: id });
+    async delete(id: number, auth?:string): Promise<dataResponse> {
+        if(auth && await jwtCtrl.checkToken(auth, {id}))
+            return await dataBase.delete({ selector: 'id', value: id });
+        else return errors.notAuth;
     }
 
     async ChangePwd(
@@ -137,7 +139,7 @@ class UsersController {
         auth?: string
     ): Promise<dataResponse> {
         const { new_pwd, old_pwd } = req;
-        if (auth && jwtCtrl.checkToken(auth, id)) {
+        if (auth && await jwtCtrl.checkToken(auth, {id})) {
             if (new_pwd && old_pwd) {
                 const getPwd = await dataBase.select('password', {
                     where: { selector: 'id', value: id },
@@ -168,12 +170,12 @@ class UsersController {
             try {
                 const options: options = { where: { selector: 'email', value: email } };
                 const userData = await dataBase.select('password, id, email', options);
-                const { id } = userData.data;
+                const { id} = userData.data;
                 const toCheckPassword = userData.data.password;
 
                 if (id && toCheckPassword) {
                     if (decrypt(password, toCheckPassword)) {
-                        return jwtCtrl.token(id, email);
+                        return await jwtCtrl.token({id, email});
                     } else return errors.pwdOrEmailNoValid;
                 } else {
                     return errors.pwdOrEmailNoValid;

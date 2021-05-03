@@ -26,7 +26,8 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 router.delete('/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
-    const {code, data} = await user.delete(id);
+    const auth = req.get('authorization');
+    const {code, data} = await user.delete(id, auth);
     res.status(code).json(data);
 });
 

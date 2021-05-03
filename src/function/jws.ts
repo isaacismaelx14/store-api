@@ -3,6 +3,8 @@ import Messages from '../database/messages';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
+import DataBase from '../database';      //Maybe you can do some db conections
+import dbConfig from '../db.config';
 
 interface tokenRes{
     id: number,
@@ -13,16 +15,28 @@ interface tokenRes{
 class JwtController {
 
     private messages:Messages;
+    private db:DataBase;
 
     constructor(){
         this.messages = new Messages();
+        this.db = new DataBase('users', dbConfig);
         dotenv.config();
     }
 
-    checkToken(auth:string, id:number):boolean{
+    private async getTypeAuth(id:number, type:number):Promise<boolean> {
+        const consult = await this.db.select('type', {where:{selector:'id', value:id}});
+        const userType = await consult.data.type;
+        if(type === userType)
+            return true;
+        return false;
+    }
+
+    async checkToken(auth:string,data:{ id?:number, type?:number}):Promise<boolean>{
+        
+        const {id, type} = data;
         
         let token:string|null = null;
-
+        
         if(auth && auth.toLowerCase().startsWith('bearer')){
             token = auth.substring(7); 
         }
@@ -30,22 +44,28 @@ class JwtController {
             try{
                 const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
                 const typedToken = (<tokenRes>decodedToken);
-                if(typedToken.id !== id) return false;
+                if(id !== undefined && typedToken.id !== id) return false;
+                if(type && !(await this.getTypeAuth(typedToken.id, type))) return false;
+
                 if(!token || !typedToken){
                     return false;
-                }else{
+                }else{             
                     return true;
                 }  
-            }catch{
+                
+            }catch(e){
+                console.log(e);
                 return false;
             }
         }
         return false;
     }
 
-    token(id:number, email:string):dataResponse {
+   
+
+    token(data:tokenRes):dataResponse {
         if(process.env.TOKEN_SECRET){
-            const token= jwt.sign({ id, email }, process.env.TOKEN_SECRET);
+            const token= jwt.sign(data, process.env.TOKEN_SECRET);
             return {code:200, data:{token}};
         }else{
             return this.messages.create(400, 'it\'s imposible to create the token');
