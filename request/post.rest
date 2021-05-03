@@ -60,6 +60,7 @@ Content-Type: application/json
 ###Post descriptions
 POST http://localhost:3001/descriptions/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJpYXQiOjE2MjAwNDU5NzF9.o28AXUPruvOh8xOQZmOxFDWPiUMe-ouHveMnIzuSDgo
 
 {
   "product_id": 1,

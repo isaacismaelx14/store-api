@@ -1,6 +1,9 @@
 import Database, { dataResponse, options, queryParam } from '../database';
 import dbConfig from '../db.config';
 import Errors from '../database/messages/errors';
+import JwtController from '../function/jws';
+import SellerController from './sellers.controller';
+import ProductController from './products.controller';
 
 interface description {
   id?: number;
@@ -14,6 +17,9 @@ interface description {
 
 const db = new Database('descriptions', dbConfig);
 const errors = new Errors();
+const jwtCtrl = new JwtController();
+const sellerCtrl = new SellerController();
+const productCtrl = new ProductController();
 
 const descriptionData = (Description: description): queryParam => [
     { selector: 'product_id', value: Description.product_id },
@@ -30,16 +36,24 @@ class DescriptionsController {
         return await db.select('*', id ? options : null);
     }
 
-    async post(Description: description): Promise<dataResponse> {
+    async post(Description: description, auth?:string): Promise<dataResponse> {
         const {brand, color, dimensions, other, product_id} = Description;
-        if (brand|| color|| dimensions|| other|| product_id)
-            return await db.insert(descriptionData(Description), {
-                toValidate: { selector: 'product_id' },
-            });
-        else return errors.requestEmpty;
+
+        const user_id = await this.getUserId(product_id);
+
+        
+        if(auth && await jwtCtrl.checkToken(auth, {id:user_id, type:1})){
+            console.log(await jwtCtrl.checkToken(auth, {id:user_id, type:1}));
+            if (brand|| color|| dimensions|| other|| product_id)
+                return await db.insert(descriptionData(Description), {
+                    toValidate: { selector: 'product_id' },
+                });
+            else return errors.requestEmpty;
+        }
+        return errors.notAuth;
     }
 
-    async update(id: number, Description: description): Promise<dataResponse> {
+    async update(id: number, Description: description, auth?:string): Promise<dataResponse> {
         if(Description.id || Description.product_id)  return errors.idCannotChange;
         const {brand, color, dimensions, other} = Description;
         if (brand|| color|| dimensions|| other)
@@ -50,8 +64,17 @@ class DescriptionsController {
         else return errors.requestEmpty;
     }
 
-    async delete(id: number): Promise<dataResponse> {
+    async delete(id: number, auth?:string): Promise<dataResponse> {
         return await db.delete({ selector: 'id', value: id });
+    }
+
+    private async getUserId(productId:number):Promise<number>{
+        const req = await productCtrl.get(productId);
+        const {seller_id} = req.data;
+
+        const reqSeller = await sellerCtrl.get(seller_id);
+        const {user_id} = reqSeller.data;
+        return user_id;
     }
 }
 
