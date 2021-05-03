@@ -26,7 +26,8 @@ class JwtController {
     private async getTypeAuth(id:number, type:number):Promise<boolean> {
         const consult = await this.db.select('type', {where:{selector:'id', value:id}});
         const userType = await consult.data.type;
-        if(type === userType)
+        console.log(type, userType);
+        if(userType >= type)
             return true;
         return false;
     }
