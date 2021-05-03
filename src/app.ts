@@ -7,6 +7,7 @@ import AnsweresRouter from './router/answers.router';
 import QuestionsRouter from './router/questions.router';
 import ComentsRouter from './router/coments.router';
 import DescriptionsRouter from './router/descriptions.router';
+import cors from 'cors';
 
 class App {
   private PORT: number | string;
@@ -19,6 +20,7 @@ class App {
   }
 
   private middlewares(): void {
+      this.app.use(cors());
       this.app.use('/users', UsersRouter);
       this.app.use('/products', ProductsRouter);
       this.app.use('/sellers', SellersRouter);

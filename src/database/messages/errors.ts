@@ -23,6 +23,10 @@ class Errors extends Messages {
     get unknowError() :dataResponse{
         return this.create(404, 'error was happened');
     }
+
+    get notAuth():dataResponse{
+        return this.create(401, '');
+    }
 }
 
 

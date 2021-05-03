@@ -3,7 +3,7 @@ import Database, { dataResponse, options, queryParam } from '../database';
 import { decrypt, encrypt } from '../function/encrypt';
 import Errors from '../database/messages/errors';
 import Messages from '../database/messages/';
-import jwt from 'jsonwebtoken';
+import JwtController from '../function/jws';
 
 interface user {
   id?: number;
@@ -32,6 +32,7 @@ interface login {
 const dataBase = new Database('users', dbConfig);
 const errors = new Errors();
 const messages = new Messages();
+const jwtCtrl = new JwtController();
 
 const userData = (
     user: user,
@@ -83,7 +84,14 @@ class UsersController {
 
     async post(User: user): Promise<dataResponse> {
         const { birthday, email, last_names, names, password, sex, type } = User;
-        const userValidate = birthday && email && last_names && names && password && sex !== undefined && type !== undefined;
+        const userValidate =
+            birthday &&
+            email &&
+            last_names &&
+            names &&
+            password &&
+            sex !== undefined &&
+            type !== undefined;
         if (userValidate)
             return await dataBase.insert(userData(User, { sndEncrypt: true }), {
                 toValidate: { selector: 'email' },
@@ -91,45 +99,66 @@ class UsersController {
         else return errors.allNeeded;
     }
 
-    async putOrPatch(id: number, User: user): Promise<dataResponse> {
+    async putOrPatch(
+        id: number,
+        User: user,
+        auth?: string
+    ): Promise<dataResponse> {
         const newData: queryParam = userData(User, { usePwd: false });
         const { birthday, email, last_names, names, sex, type } = User;
-        const userValidator = birthday || email || last_names || names || sex !== undefined || type !== undefined;
+        const userValidator =
+            birthday ||
+            email ||
+            last_names ||
+            names ||
+            sex !== undefined ||
+            type !== undefined;
 
-        if (userValidator)
-            return await dataBase.update(
-                newData,
-                { selector: 'id', value: id },
-                { toValidate: { selector: 'email' } }
-            );
-        else return errors.requestEmpty;
+        if (auth && jwtCtrl.checkToken(auth, id)) {
+            if (userValidator)
+                return await dataBase.update(
+                    newData,
+                    { selector: 'id', value: id },
+                    { toValidate: { selector: 'email' } }
+                );
+            else return errors.requestEmpty;
+        } else {
+            return errors.notAuth;
+        }
     }
 
     async delete(id: number): Promise<dataResponse> {
         return await dataBase.delete({ selector: 'id', value: id });
     }
 
-    async ChangePwd(id: number, req: changePassword): Promise<dataResponse> {
+    async ChangePwd(
+        id: number,
+        req: changePassword,
+        auth?: string
+    ): Promise<dataResponse> {
         const { new_pwd, old_pwd } = req;
-
-        if (new_pwd && old_pwd) {
-            const getPwd = await dataBase.select('password', {
-                where: { selector: 'id', value: id },
-            });
-            const getedOldPwd = getPwd.data.password;
-
-            if (decrypt(old_pwd, getedOldPwd)) {
-                if (new_pwd !== old_pwd)
-                    await dataBase.update(
-                        { selector: 'password', value: encrypt(new_pwd) },
-                        { selector: 'id', value: id }
-                    );
-                return messages.create(200, 'password changed');
+        if (auth && jwtCtrl.checkToken(auth, id)) {
+            if (new_pwd && old_pwd) {
+                const getPwd = await dataBase.select('password', {
+                    where: { selector: 'id', value: id },
+                });
+                const getedOldPwd = getPwd.data.password;
+                if (!getedOldPwd) return messages.create(404, 'user not found');
+                if (decrypt(old_pwd, getedOldPwd)) {
+                    if (new_pwd !== old_pwd)
+                        await dataBase.update(
+                            { selector: 'password', value: encrypt(new_pwd) },
+                            { selector: 'id', value: id }
+                        );
+                    return messages.create(200, 'password changed');
+                } else {
+                    return errors.passwordNotMatch;
+                }
             } else {
-                return errors.passwordNotMatch;
+                return errors.allNeeded;
             }
         } else {
-            return errors.allNeeded;
+            return errors.notAuth;
         }
     }
 
@@ -141,12 +170,11 @@ class UsersController {
                 const userData = await dataBase.select('password, id, email', options);
                 const { id } = userData.data;
                 const toCheckPassword = userData.data.password;
+
                 if (id && toCheckPassword) {
-                    console.log(id);
-                    if (decrypt(password, toCheckPassword))
-                        return messages.create(200, 'accepted');
-                    else 
-                        return errors.pwdOrEmailNoValid;
+                    if (decrypt(password, toCheckPassword)) {
+                        return jwtCtrl.token(id, email);
+                    } else return errors.pwdOrEmailNoValid;
                 } else {
                     return errors.pwdOrEmailNoValid;
                 }
