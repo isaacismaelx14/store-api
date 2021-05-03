@@ -1,6 +1,5 @@
 import UsersController from '../controllers/users.controller';
 import express, { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 const user = new UsersController();
