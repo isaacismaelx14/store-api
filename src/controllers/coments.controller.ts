@@ -1,6 +1,7 @@
 import Database, { dataResponse, options, queryParam } from '../database';
 import dbConfig from '../db.config';
 import Errors from '../database/messages/errors';
+import JswController from '../function/jws';
 
 interface comment {
   id?: number;
@@ -13,6 +14,7 @@ interface comment {
 
 const db = new Database('comments', dbConfig);
 const errors = new Errors();
+const jwtCtrl = new JswController();
 
 const commentData = (Comment: comment): queryParam => [
     { selector: 'product_id', value: Comment.product_id },
@@ -27,24 +29,38 @@ class CommentsController {
         return await db.select('*', id ? options : null);
     }
 
-    async post(Comment: comment): Promise<dataResponse> {
+    async post(Comment: comment, auth?:string): Promise<dataResponse> {
         const {comment, product_id, user_id} = Comment;
-        if(comment && product_id && user_id)
-            return await db.insert(commentData(Comment));
-        else 
-            return errors.requestEmpty;
+        if(auth && jwtCtrl.checkToken(auth, {id:user_id})){
+            if(comment && product_id && user_id)
+                return await db.insert(commentData(Comment));
+            else 
+                return errors.requestEmpty;
+        }
+        return errors.notAuth;
     }
 
-    async update(id: number, Comment: comment): Promise<dataResponse> {
+    async update(id: number, Comment: comment, auth?:string): Promise<dataResponse> {
         if(Comment.id || Comment.user_id) return errors.idCannotChange;
-        const {comment, product_id, star} = Comment;
-        if(comment || product_id || star !== undefined)
-            return await db.update(commentData(Comment), { selector: 'id', value: id });
-        else return errors.allNeeded;
+        
+        const req = await this.get(id);
+        const {user_id} = req.data;
+
+        if(auth && jwtCtrl.checkToken(auth, {id:user_id})){
+            const {comment, product_id, star} = Comment;
+            if(comment || product_id || star !== undefined)
+                return await db.update(commentData(Comment), { selector: 'id', value: id });
+            else return errors.allNeeded;
+        }
+        return errors.notAuth;
     }
 
-    async delete(id: number): Promise<dataResponse> {
-        return await db.delete({ selector: 'id', value: id });
+    async delete(id: number, auth?:string): Promise<dataResponse> {
+        const req = await this.get(id);
+        const {user_id} = req.data;
+        if(auth && jwtCtrl.checkToken(auth, {id:user_id}))
+            return await db.delete({ selector: 'id', value: id });
+        return errors.notAuth;
     }
 }
 
