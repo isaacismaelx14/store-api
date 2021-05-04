@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import Messages from '.';
 import { dataResponse } from '../';
 
@@ -30,6 +33,10 @@ class Errors extends Messages {
 
     get idCannotChange():dataResponse{
         return this.create(401, 'You cannot change the id');
+    }
+
+    valueNotExist(selector:string, value:any):dataResponse{
+        return this.create(404, `do not exist any ${selector} with value ${value}`);
     }
 }
 

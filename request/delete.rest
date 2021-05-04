@@ -13,3 +13,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 ###
 DELETE http://localhost:3001/products/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJ0eXBlIjoxLCJpYXQiOjE2MjAwNTQ5OTh9.RPEw-MFNz5UZYnygeUvLraFhp67QQLeaxN8cdAqVfm0
+###
+DELETE http://localhost:3001/questions/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJ0eXBlIjoxLCJpYXQiOjE2MjAwNTQ5OTh9.RPEw-MFNz5UZYnygeUvLraFhp67QQLeaxN8cdAqVfm0
