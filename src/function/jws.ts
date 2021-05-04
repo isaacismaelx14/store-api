@@ -62,14 +62,12 @@ class JwtController {
         return false;
     }
 
-   
-
     token(data:tokenRes):dataResponse {
         if(process.env.TOKEN_SECRET){
             const token= jwt.sign(data, process.env.TOKEN_SECRET);
             return {code:200, data:{token}};
         }else{
-            return this.messages.create(400, 'it\'s imposible to create the token');
+            return this.messages.create(400, 'it\'s imposible to create the token Contact with the backend admin. -> Unhanddle: TOKEN_SECRET <-');
         } 
     }
 }
