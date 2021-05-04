@@ -58,7 +58,7 @@ class DescriptionsController {
         const {brand, color, dimensions, other} = Description;
         const user_id = await this.getUserId({descId:id});
 
-        if(auth && jwtCtrl.checkToken(auth, {id:user_id, type:this.type})){
+        if(auth && await jwtCtrl.checkToken(auth, {id:user_id, type:this.type})){
             if (brand|| color|| dimensions|| other)
                 return await db.update(descriptionData(Description), {
                     selector: 'id',
@@ -70,7 +70,7 @@ class DescriptionsController {
     }
 
     async delete(id: number, auth?:string): Promise<dataResponse> {
-        if(auth && jwtCtrl.checkToken(auth, {id:await this.getUserId({descId:id})}))
+        if(auth && await jwtCtrl.checkToken(auth, {id:await this.getUserId({descId:id})}))
             return await db.delete({ selector: 'id', value: id });
         return errors.notAuth;
     }
