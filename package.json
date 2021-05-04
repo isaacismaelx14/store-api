@@ -9,7 +9,13 @@
     "build": "tsc --p .",
     "test": "jest",
     "create": "touch src/controllers/${npm_config_name}.controller.ts && touch src/router/${npm_config_name}.router.ts",
-    "fix": "prettier --check"
+    "fix": "prettier --check",
+    "create:dist.tar.gz": "tar -zcvf dist.tar.gz dist/",
+    "upload:server": "scp dist.tar.gz  isaac@192.168.1.113:/home/samba/samba/appdata/server/",
+    "clear:dist": "rm -r dist",
+    "clear:dist.tar.gz": "rm dist.tar.gz",
+    "clear:all": "rm -r dist && rm dist.tar.gz",
+    "git:add": "git add ."
   },
   "keywords": [],
   "author": "",
