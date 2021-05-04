@@ -1,7 +1,7 @@
 import Database, { dataResponse, options, queryParam } from '../database';
 import dbConfig from '../db.config';
 import Errors from '../database/messages/errors';
-import JwtController from '../function/jws';
+import JwtController from './Jwt.controller';
 import SellerController from './sellers.controller';
 import ProductController from './products.controller';
 
@@ -41,7 +41,6 @@ class DescriptionsController {
         const {brand, color, dimensions, other, product_id} = Description;
 
         const user_id = await this.getUserId({productId:product_id});
-
         
         if(auth && await jwtCtrl.checkToken(auth, {id:user_id, type:this.type})){
             if (brand|| color|| dimensions|| other|| product_id)

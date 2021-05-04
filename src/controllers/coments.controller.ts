@@ -1,7 +1,7 @@
 import Database, { dataResponse, options, queryParam } from '../database';
 import dbConfig from '../db.config';
 import Errors from '../database/messages/errors';
-import JswController from '../function/jws';
+import JswController from './Jwt.controller';
 
 interface comment {
   id?: number;
@@ -30,12 +30,16 @@ class CommentsController {
     }
 
     async post(Comment: comment, auth?:string): Promise<dataResponse> {
-        const {comment, product_id, user_id} = Comment;
-        if(auth && jwtCtrl.checkToken(auth, {id:user_id})){
-            if(comment && product_id && user_id)
-                return await db.insert(commentData(Comment));
-            else 
-                return errors.requestEmpty;
+        const {comment, product_id} = Comment;
+        if(auth && jwtCtrl.checkToken(auth)){
+            const userId = jwtCtrl.getTokenData(auth).data?.id;
+            if(userId){
+                Comment.user_id = userId;
+                if(comment && product_id)
+                    return await db.insert(commentData(Comment));
+                else 
+                    return errors.requestEmpty;
+            }
         }
         return errors.notAuth;
     }

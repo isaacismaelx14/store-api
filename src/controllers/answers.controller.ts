@@ -1,7 +1,7 @@
 import Database, { dataResponse, options, queryParam } from '../database';
 import dbConfig from '../db.config';
 import Errors from '../database/messages/errors';
-import JwtController from '../function/jws';
+import JwtController from './Jwt.controller';
 
 interface answer {
   id?: number;
@@ -28,14 +28,18 @@ class AnswersController {
     }
 
     async post(Answer: answer, auth?: string): Promise<dataResponse> {
-        const { answer, parent_id, user_id } = Answer;
-        if (auth && await jwtCtrl.checkToken(auth, {id:user_id})) {
-            if (parent_id && user_id && answer) 
-                return db.insert(answerData(Answer));
-            else return errors.allNeeded;
-        } else {
-            return errors.notAuth;
-        }
+        const { answer, parent_id } = Answer;
+        if (auth && await jwtCtrl.checkToken(auth) ) {
+            const userId = jwtCtrl.getTokenData(auth).data?.id;
+            if(userId){
+                Answer.user_id = userId;
+                if (parent_id && answer) 
+                    return db.insert(answerData(Answer));
+                else return errors.allNeeded;
+            }
+        } 
+        return errors.notAuth;
+        
     }
 
     async update(

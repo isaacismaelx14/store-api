@@ -32,16 +32,34 @@ class JwtController {
         return false;
     }
 
-    async checkToken(auth:string,data:{ id?:number, type?:number}):Promise<boolean>{
-        
-        const {id, type} = data;
-        
-        let token:string|null = null;
-        
-        if(auth && auth.toLowerCase().startsWith('bearer')){
-            token = auth.substring(7); 
+    getTokenData(auth:string):{exist:boolean, data?:tokenRes}{
+        const token:string = this.convertToken(auth);
+
+        if(process.env.TOKEN_SECRET){
+            const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+            const typedToken = (<tokenRes>decodedToken);
+            if(!token || !typedToken)
+                return {exist:false};
+            return {exist:true, data:typedToken};
         }
-        if(token && process.env.TOKEN_SECRET){
+        return {exist:false};
+    }
+
+    private convertToken(auth:string):string{
+        if(auth && auth.toLowerCase().startsWith('bearer')){
+            return auth.substring(7); 
+        }   
+        // throw new Error('It is imposible to get the token:The Token Do not have the correct');
+        return '';
+    }
+
+    async checkToken(auth:string,data?:{ id?:number, type?:number}):Promise<boolean>{
+        const deft:{ id?:number, type?:number} = {id:undefined, type:undefined};
+        const {id, type} = data? data :deft;
+        
+        const token:string = this.convertToken(auth);
+    
+        if(token && process.env.TOKEN_SECRET)
             try{
                 const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
                 const typedToken = (<tokenRes>decodedToken);
@@ -58,7 +76,7 @@ class JwtController {
                 console.log(e);
                 return false;
             }
-        }
+        
         return false;
     }
 
@@ -73,3 +91,4 @@ class JwtController {
 }
 
 export default JwtController;
+export {tokenRes};

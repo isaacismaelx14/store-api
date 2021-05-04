@@ -3,7 +3,7 @@ import Database, { dataResponse, options, queryParam } from '../database';
 import { decrypt, encrypt } from '../function/encrypt';
 import Errors from '../database/messages/errors';
 import Messages from '../database/messages/';
-import JwtController from '../function/jws';
+import JwtController from './Jwt.controller';
 
 interface user {
   id?: number;

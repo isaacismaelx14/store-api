@@ -1,7 +1,7 @@
 import DataBase, { dataResponse, options, queryParam } from '../database';
 import Errors from '../database/messages/errors';
 import dbConfig from '../db.config';
-import JwtController from '../function/jws';
+import JwtController from './Jwt.controller';
 
 interface category {
   id?: number;

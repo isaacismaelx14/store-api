@@ -2,7 +2,7 @@ import Database, { dataResponse, options, queryParam } from '../database';
 import dbConfig from '../db.config';
 import Errors from '../database/messages/errors';
 import SellerController from '../controllers/sellers.controller';
-import JwtController from '../function/jws';
+import JwtController from './Jwt.controller';
 
 interface Products {
   id?: number;
