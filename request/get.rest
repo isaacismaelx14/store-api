@@ -26,3 +26,5 @@ GET http://localhost:3001/descriptions/
 
 ### Get one desc
 GET http://localhost:3001/descriptions/by-product/1
+### Get one desc
+GET http://localhost:3001/products

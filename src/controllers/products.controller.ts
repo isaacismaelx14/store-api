@@ -1,6 +1,8 @@
 import Database, { dataResponse, options, queryParam } from '../database';
 import dbConfig from '../db.config';
 import Errors from '../database/messages/errors';
+import SellerController from '../controllers/sellers.controller';
+import JwtController from '../function/jws';
 
 interface Products {
   id?: number;
@@ -17,6 +19,8 @@ interface Products {
 
 const db = new Database('products', dbConfig);
 const errors = new Errors();
+const sellerCtrl = new SellerController();
+const jwtCtrl = new JwtController();
 
 const productsData = (Products: Products): queryParam => [
     { selector: 'about', value: Products.about },
@@ -35,7 +39,7 @@ class ProductsController {
         return await db.select('*', id ? options : null);
     }
 
-    async post(Products: Products): Promise<dataResponse> {
+    async post(Products: Products, auth?:string): Promise<dataResponse> {
         const {
             about,
             category_id,
@@ -46,12 +50,15 @@ class ProductsController {
             title,
         } = Products;
 
-        if (about && category_id && picture_id && price && seller_id && stock > 0 && title)
-            return await db.insert(productsData(Products));
-        else return errors.allNeeded;
+        if(auth && await jwtCtrl.checkToken(auth, {id:await this.getUserId({sellerId:seller_id})})){
+            if (about && category_id && picture_id && price && seller_id && stock > 0 && title)
+                return await db.insert(productsData(Products));
+            else return errors.allNeeded;
+        }
+        return errors.notAuth;
     }
 
-    async patch(id: number, Products: Products): Promise<dataResponse> {
+    async patch(id: number, Products: Products, auth?:string): Promise<dataResponse> {
         if(Products.id || Products.seller_id) return errors.idCannotChange;
 
         const {
@@ -62,17 +69,43 @@ class ProductsController {
             stock,
             title,
         } = Products;
-
-        if (about || category_id || picture_id || price || stock  !== undefined || title)
-            return await db.update(productsData(Products), {
-                selector: 'id',
-                value: id,
-            });
-        else return errors.requestEmpty;
+        if(auth && await jwtCtrl.checkToken(auth, {id:await this.getUserId({productId:id})})){
+            if (about || category_id || picture_id || price || stock  !== undefined || title)
+                return await db.update(productsData(Products), {
+                    selector: 'id',
+                    value: id,
+                });
+            else return errors.requestEmpty;
+        }
+        return errors.notAuth;
     }
 
-    async delete(id: number): Promise<dataResponse> {
-        return await db.delete({ selector: 'id', value: id });
+    async delete(id: number, auth?:string): Promise<dataResponse> {
+        console.log(id);
+        if(auth && await jwtCtrl.checkToken(auth, {id:await this.getUserId({productId:id})}))
+            return await db.delete({ selector: 'id', value: id });
+            // return {code:201, data:{m:'s'}}; //fot tests
+        return errors.notAuth;
+    }
+
+    
+    private async getUserId(data:{sellerId?:number, productId?:number}):Promise<number>{
+        const {productId, sellerId} = data;
+        let id:number|undefined;
+        
+        if(sellerId) id = sellerId;
+        
+        if(productId !== undefined){
+            const req = await this.get(id);
+            id = await req.data[0].seller_id;
+            console.log(id);
+        }
+        
+        if(!id) throw new Error('Id is undifined');
+        
+        const reqSeller = await sellerCtrl.get(id);
+        const {user_id} = reqSeller.data;
+        return user_id;       
     }
 }
 
