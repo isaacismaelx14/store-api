@@ -31,17 +31,14 @@ class CommentsController {
 
     async post(Comment: comment, auth?:string): Promise<dataResponse> {
         const {comment, product_id} = Comment;
-        if(auth && jwtCtrl.checkToken(auth)){
-            const userId = jwtCtrl.getTokenData(auth).data?.id;
-            if(userId){
-                Comment.user_id = userId;
-                if(comment && product_id)
-                    return await db.insert(commentData(Comment));
-                else 
-                    return errors.requestEmpty;
-            }
-        }
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth))) return errors.notAuth;
+
+        const userId = jwtCtrl.getTokenData(auth).data?.id;
+        if(!userId) return errors.notAuth;
+        Comment.user_id = userId;
+        
+        if(!comment || !product_id) return errors.requestEmpty;
+        return await db.insert(commentData(Comment));
     }
 
     async update(id: number, Comment: comment, auth?:string): Promise<dataResponse> {
@@ -49,22 +46,20 @@ class CommentsController {
         
         const req = await this.get(id);
         const {user_id} = req.data;
+        const {comment, product_id, star} = Comment;
 
-        if(auth && jwtCtrl.checkToken(auth, {id:user_id})){
-            const {comment, product_id, star} = Comment;
-            if(comment || product_id || star !== undefined)
-                return await db.update(commentData(Comment), { selector: 'id', value: id });
-            else return errors.allNeeded;
-        }
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {id:user_id}))) return errors.notAuth;
+        if(!comment && !product_id && star === undefined) return errors.allNeeded;
+
+        return await db.update(commentData(Comment), { selector: 'id', value: id });
     }
 
     async delete(id: number, auth?:string): Promise<dataResponse> {
         const req = await this.get(id);
         const {user_id} = req.data;
-        if(auth && jwtCtrl.checkToken(auth, {id:user_id}))
-            return await db.delete({ selector: 'id', value: id });
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {id:user_id}))) return errors.notAuth;
+
+        return await db.delete({ selector: 'id', value: id });
     }
 }
 

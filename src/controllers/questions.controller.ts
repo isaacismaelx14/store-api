@@ -32,31 +32,28 @@ class QuestionController {
     async post(Question: question, auth?:string): Promise<dataResponse> {
         const {product_id, question} = Question;
         
-        if(auth && await jwtCtrl.checkToken(auth)){
-            const userId = jwtCtrl.getTokenData(auth).data?.id;
-            if(userId){
-                Question.user_id = userId;
-                if(product_id && question)
-                    return await db.insert(questionData(Question));
-                else return errors.allNeeded;
-            }
-        }
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth))) return errors.notAuth;
+        const userId = jwtCtrl.getTokenData(auth).data?.id;
+        if(!userId) return errors.notAuth;
+        Question.user_id = userId;
+        if(!product_id || !question) return errors.allNeeded;
+
+        return await db.insert(questionData(Question));     
+
     }
 
     async update(id: number, Question: question, auth?:string): Promise<dataResponse> {
         if(Question.id || Question.product_id || Question.user_id) return errors.idCannotChange;
-        
         const {question, star} = Question;
-        if(auth && await jwtCtrl.checkToken(auth, {id:await this.getId(id)})){
-            if( question || star !== undefined)
-                return await db.update(questionData(Question), {
-                    selector: 'id',
-                    value: id,
-                });
-            else return errors.requestEmpty;
-        }
-        return errors.notAuth;
+        
+        if(!auth || !(await jwtCtrl.checkToken(auth, {id:await this.getId(id)}))) return errors.notAuth;
+        if( !question && star === undefined)  return errors.requestEmpty;
+       
+        return await db.update(questionData(Question), {
+            selector: 'id',
+            value: id,
+        });    
+
     }
 
     async delete(id: number, auth?:string): Promise<dataResponse> {
@@ -64,10 +61,10 @@ class QuestionController {
 
         if(getterId === 0) return errors.valueNotExist('id',id);
 
-        if(auth &&  await jwtCtrl.checkToken(auth, {id:getterId}))
-            return await db.delete({ selector: 'id', value: id });
-        // return {code:200, data:{m:'testing', id:await this.getId(id)}}; //Test
-        return errors.notAuth;
+        if(!auth ||  !(await jwtCtrl.checkToken(auth, {id:getterId}))) return errors.notAuth;
+
+        return await db.delete({ selector: 'id', value: id });
+
     }
 
     async getId(questionId:number):Promise<number>{

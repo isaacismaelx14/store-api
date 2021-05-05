@@ -42,14 +42,12 @@ class DescriptionsController {
 
         const user_id = await this.getUserId({productId:product_id});
         
-        if(auth && await jwtCtrl.checkToken(auth, {id:user_id, type:this.type})){
-            if (brand|| color|| dimensions|| other|| product_id)
-                return await db.insert(descriptionData(Description), {
-                    toValidate: { selector: 'product_id' },
-                });
-            else return errors.requestEmpty;
-        }
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {id:user_id, type:this.type}))) return errors.notAuth;
+        if (!brand && !color && !dimensions && !other && !product_id) return errors.requestEmpty;
+
+        return await db.insert(descriptionData(Description), {
+            toValidate: { selector: 'product_id' },
+        });
     }
 
     async update(id: number, Description: description, auth?:string): Promise<dataResponse> {
@@ -57,21 +55,18 @@ class DescriptionsController {
         const {brand, color, dimensions, other} = Description;
         const user_id = await this.getUserId({descId:id});
 
-        if(auth && await jwtCtrl.checkToken(auth, {id:user_id, type:this.type})){
-            if (brand|| color|| dimensions|| other)
-                return await db.update(descriptionData(Description), {
-                    selector: 'id',
-                    value: id,
-                });
-            else return errors.requestEmpty;
-        }
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {id:user_id, type:this.type}))) return errors.notAuth;
+        if (!brand && !color&& !dimensions&& !other) return errors.requestEmpty;
+        
+        return await db.update(descriptionData(Description), {
+            selector: 'id',
+            value: id,
+        });
     }
 
     async delete(id: number, auth?:string): Promise<dataResponse> {
-        if(auth && await jwtCtrl.checkToken(auth, {id:await this.getUserId({descId:id})}))
-            return await db.delete({ selector: 'id', value: id });
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {id:await this.getUserId({descId:id})}))) return errors.notAuth;
+        return await db.delete({ selector: 'id', value: id });
     }
 
     private async getUserId(data:{productId?:number, descId?:number}):Promise<number>{

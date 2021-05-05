@@ -27,37 +27,36 @@ class CategoriesController {
     }
 
     async post(Category: category, auth?:string): Promise<dataResponse> {
-        if(auth && await jwtCtrl.checkToken(auth, {type:this.userType})){
-            const { category } = Category;
-            if (category)
-                return await db.insert(categoryData(Category), {
-                    toValidate: { selector: mainSelector },
-                });
-            else return errors.allNeeded;
-        }
+        if(!auth || !(await jwtCtrl.checkToken(auth, {type:this.userType})))  return errors.notAuth;
 
-        return errors.notAuth;
+        const { category } = Category;
+        if (!category) return errors.requestEmpty;
+
+        return await db.insert(categoryData(Category), {
+            toValidate: { selector: mainSelector },
+        });
+        
     }
 
     async update(id: number, Category: category, auth?:string): Promise<dataResponse> {
         if(Category.id) return errors.idCannotChange;
+        const {category} = Category;
         
-        if(auth && await jwtCtrl.checkToken(auth, {type:this.userType})){
-            return await db.update(
-                categoryData(Category),
-                { selector: 'id', value: id },
-                { toValidate: { selector: mainSelector } }
-            );
-        }
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {type:this.userType}))) return errors.notAuth;
+        if (!category) return errors.requestEmpty;
+
+        return await db.update(
+            categoryData(Category),
+            { selector: 'id', value: id },
+            { toValidate: { selector: mainSelector } }
+        );
+        
     }
 
     async delete(id: number, auth?:string): Promise<dataResponse> {
-        if(auth && await jwtCtrl.checkToken(auth, {type:this.userType})){
-            // return await db.delete({ selector: 'id', value: id });
-            return {code:200, data:{message:'hey'}};
-        }
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {type:this.userType})))  return errors.notAuth;
+        return await db.delete({ selector: 'id', value: id });
+        // return {code:200, data:{message:'hey'}};
     }
 }
 

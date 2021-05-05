@@ -32,39 +32,39 @@ class SellersController {
     }
 
     async post(Seller: seller, auth?:string): Promise<dataResponse> {
-        const {description, direction, name, rank} = Seller;
-        if(auth && await jwtCtrl.checkToken(auth)){
-            const userId = jwtCtrl.getTokenData(auth).data?.id;
-            if(userId){
-                Seller.user_id = userId;
-                if(description && direction && name && rank !== undefined)
-                    return await db.insert(sellerData(Seller));
-                else return errors.allNeeded;
-            }
-        }
-        return errors.notAuth;
+        const {description,  name, rank} = Seller;
+
+        if(!auth || !(await jwtCtrl.checkToken(auth))) return errors.notAuth;
+        const userId = jwtCtrl.getTokenData(auth).data?.id;
+
+        if(!userId)  return errors.allNeeded;
+        Seller.user_id = userId;
+
+        if(!description || !name || rank === undefined) return errors.allNeeded;
+
+        return await db.insert(sellerData(Seller));
+        // return errors.create(200, 's'); //for tests    
     }
 
     async update(id: number, Seller: seller, auth?:string): Promise<dataResponse> {
+        const {description, direction, name, rank} = Seller;
+
         if(Seller.id || Seller.user_id) return errors.idCannotChange;
-        if(auth && await jwtCtrl.checkToken(auth, {id:await this.getUserId(id)})){
-            const {description, direction, name, rank} = Seller;
-            if(description || direction || name || rank !== undefined )
-                return await db.update(sellerData(Seller), { selector: 'id', value: id });
-            else return errors.requestEmpty;
-        }
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {id:await this.getUserId(id)}))) return errors.notAuth;
+        if(!description && !direction && !name && rank === undefined ) return errors.requestEmpty;
+        
+        return await db.update(sellerData(Seller), { selector: 'id', value: id });
     }
 
     async delete(id: number, auth?:string): Promise<dataResponse> {
-        if(auth && await jwtCtrl.checkToken(auth, {id:await this.getUserId(id)}))
-            // return await db.delete({ selector: 'id', value: id });
-            return {code:201, data:'deleted'};
-        return errors.notAuth;
+        if(!auth || !(await jwtCtrl.checkToken(auth, {id:await this.getUserId(id)}))) return errors.notAuth;
+        return await db.delete({ selector: 'id', value: id });
+        // return {code:201, data:'deleted'};
+
     }
 
     private async getUserId(sellerId:number){
-        const req =await this.get(sellerId);
+        const req = await this.get(sellerId);
         const {user_id} = req.data;
         return user_id;
     }

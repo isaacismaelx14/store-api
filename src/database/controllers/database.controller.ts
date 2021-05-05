@@ -20,8 +20,9 @@ class DataBaseController {
   private config: config;
   private conn: Connection;
   private table: string;
-  private errors:Errors;
   private messages:Messages;
+  
+  public errors:Errors;
 
   constructor(table: string, config: config, isTest: boolean) {
       this.config = config;

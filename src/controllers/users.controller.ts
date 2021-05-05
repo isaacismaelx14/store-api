@@ -74,22 +74,23 @@ const pdwCtrl = function (Pwd: string, Encrypt: boolean, usePwd: boolean) {
 };
 
 class UsersController {
-    async get(id: number | undefined = undefined): Promise<dataResponse> {
+    async get(auth?:string, id: number | undefined = undefined): Promise<dataResponse> {
         const options: options = { where: { selector: 'id', value: id } };
-        try {
-            return await dataBase.select(
-                'id, names, last_names, email, sex, direction, cart, birthday, type, created_date',
-                id ? options : null
-            );
-        } catch (error) {
-            return errors.create(400, error);
+        const resp = await dataBase.select(
+            'id, names, last_names, email, sex, direction, cart, birthday, type, created_date',
+            id ? options : null
+        );
+        if(id){
+            if(!auth || !(await jwtCtrl.checkToken(auth, {id, type:2}))) return errors.notAuth;
+            return resp;
         }
+        if(!auth || !(await jwtCtrl.checkToken(auth, {type:2}))) return errors.notAuth;
+        return resp;
     }
 
     async post(User: user): Promise<dataResponse> {
         const { birthday, email, last_names, names, password, sex, type } = User;
-        try {
-            const userValidate =
+        const userValidate =
         birthday &&
         email &&
         last_names &&
@@ -97,14 +98,10 @@ class UsersController {
         password &&
         sex !== undefined &&
         type !== undefined;
-            if (userValidate)
-                return await dataBase.insert(userData(User, { sndEncrypt: true }), {
-                    toValidate: { selector: 'email' },
-                });
-            else return errors.allNeeded;
-        } catch (error) {
-            return errors.create(400, error);
-        }
+        if (!userValidate) return errors.allNeeded;
+        return await dataBase.insert(userData(User, { sndEncrypt: true }), {
+            toValidate: { selector: 'email' },
+        });
     }
 
     async putOrPatch(
@@ -113,10 +110,9 @@ class UsersController {
         auth?: string
     ): Promise<dataResponse> {
         if(User.id) return errors.idCannotChange;
-        try {
-            const newData: queryParam = userData(User, { usePwd: false });
-            const { birthday, email, last_names, names, sex, type } = User;
-            const userValidator =
+        const newData: queryParam = userData(User, { usePwd: false });
+        const { birthday, email, last_names, names, sex, type } = User;
+        const userValidator =
             birthday ||
             email ||
             last_names ||
@@ -124,85 +120,64 @@ class UsersController {
             sex !== undefined ||
             type !== undefined;
 
-            if (auth && await jwtCtrl.checkToken(auth, {id})) {
-                if (userValidator)
-                    return await dataBase.update(
-                        newData,
-                        { selector: 'id', value: id },
-                        { toValidate: { selector: 'email' } }
-                    );
-                else return errors.requestEmpty;
-            } else {
-                return errors.notAuth;
-            }
-        } catch (error) {
-            return errors.create(400, error);
-        }
+        if (!auth || !(await jwtCtrl.checkToken(auth, {id}))) return errors.notAuth;
+        if (!userValidator)return errors.requestEmpty;
+
+        return await dataBase.update(
+            newData,
+            { selector: 'id', value: id },
+            { toValidate: { selector: 'email' } }
+        );
     }
 
     async delete(id: number, auth?:string): Promise<dataResponse> {
-        try {
-            if(auth && await jwtCtrl.checkToken(auth, {id}))
-                return await dataBase.delete({ selector: 'id', value: id });
-            else return errors.notAuth;
-            
-        } catch (error) {
-            return errors.create(400, error);
-        }
+        if(auth && await jwtCtrl.checkToken(auth, {id}))
+            return await dataBase.delete({ selector: 'id', value: id });
+        else return errors.notAuth;
+
     }
 
     async ChangePwd(
         id: number,
         req: changePassword,
-        auth?: string
-    ): Promise<dataResponse> {
+        auth?: string): Promise<dataResponse> {
         const { new_pwd, old_pwd } = req;
-        if (auth && await jwtCtrl.checkToken(auth, {id})) {
-            if (!new_pwd && !old_pwd)  return errors.allNeeded;
+        if (!auth || !(await jwtCtrl.checkToken(auth, {id}))) return errors.notAuth;
+        if (!new_pwd && !old_pwd)  return errors.allNeeded;
 
-            const getPwd = await dataBase.select('password', {
-                where: { selector: 'id', value: id },
-            });
+        const getPwd = await dataBase.select('password', {
+            where: { selector: 'id', value: id },
+        });
 
-            const getedOldPwd = getPwd.data.password;
+        const getedOldPwd = getPwd.data.password;
 
-            if (!getedOldPwd) return messages.create(404, 'user not found');
-            if (!decrypt(old_pwd, getedOldPwd)) return errors.passwordNotMatch;
+        if (!getedOldPwd) return messages.create(404, 'user not found');
+        if (!decrypt(old_pwd, getedOldPwd)) return errors.passwordNotMatch;
 
-            if (new_pwd !== old_pwd)
-                try {
-                    await dataBase.update(
-                        { selector: 'password', value: encrypt(new_pwd) },
-                        { selector: 'id', value: id }
-                    );
-                } catch (error) {
-                    return errors.create(400, error);
-                }
-            return messages.create(200, 'password changed');        
-        }
-        return errors.notAuth;
+        if (new_pwd !== old_pwd)
+            await dataBase.update(
+                { selector: 'password', value: encrypt(new_pwd) },
+                { selector: 'id', value: id }
+            );
+        return messages.create(200, 'password changed');   
     }
 
     async Login(loginData: login): Promise<dataResponse> {
         const { email, password } = loginData;
         if (!email && !password) return errors.allNeeded;
 
-        try {
-            const options: options = { where: { selector: 'email', value: email } };
-            const userData = await dataBase.select('password, id, email', options);
-            const { id} = userData.data;
-            const toCheckPassword = userData.data.password;
+  
+        const options: options = { where: { selector: 'email', value: email } };
+        const userData = await dataBase.select('password, id, email', options);
+        const { id} = userData.data;
+        const toCheckPassword = userData.data.password;
 
-            if (!id && !toCheckPassword)  return errors.pwdOrEmailNoValid;
+        if (!id && !toCheckPassword)  return errors.pwdOrEmailNoValid;
 
-            if (!decrypt(password, toCheckPassword)) return errors.pwdOrEmailNoValid;
+        if (!decrypt(password, toCheckPassword)) return errors.pwdOrEmailNoValid;
             
-            return jwtCtrl.token({id, email});    
-            
-        } catch (error) {
-            return errors.create(400, error);
-        }
-      
+        return jwtCtrl.token({id, email});    
+    
     }
 }
 

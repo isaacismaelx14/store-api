@@ -26,7 +26,7 @@ class JwtController {
     private async getTypeAuth(id:number, type:number):Promise<boolean> {
         const consult = await this.db.select('type', {where:{selector:'id', value:id}});
         const userType = await consult.data.type;
-        console.log(type, userType);
+        // console.log(userType >= type);
         if(userType >= type)
             return true;
         return false;
@@ -53,18 +53,36 @@ class JwtController {
         return '';
     }
 
+    async verifyData(data:{ id?:number, type?:number}, typedToken:tokenRes):Promise<boolean>{
+        const{id,type}=data;
+        let state = true;
+
+        const idCheck = id !== undefined && typedToken.id !== id;
+        const typeCheck = type && !(await this.getTypeAuth(typedToken.id, type));
+
+        if (idCheck) state=false;
+        if(typeCheck) state=false;
+
+        if(id && type){
+            state = true;
+            if(idCheck && typeCheck) state = false;       
+        }
+
+        return !state;
+    }
+
     async checkToken(auth:string,data?:{ id?:number, type?:number}):Promise<boolean>{
         const deft:{ id?:number, type?:number} = {id:undefined, type:undefined};
-        const {id, type} = data? data :deft;
-        
         const token:string = this.convertToken(auth);
+        
+        if(!data) data = deft;
     
         if(token && process.env.TOKEN_SECRET)
             try{
                 const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
                 const typedToken = (<tokenRes>decodedToken);
-                if(id !== undefined && typedToken.id !== id) return false;
-                if(type && !(await this.getTypeAuth(typedToken.id, type))) return false;
+
+                if(await this.verifyData(data, typedToken)) return false;
 
                 if(!token || !typedToken){
                     return false;

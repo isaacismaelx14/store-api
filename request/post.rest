@@ -1,8 +1,8 @@
 POST http://localhost:3001/sellers
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJpYXQiOjE2MjAxNjE2OTd9.ww6-3W8O6D6s3SufLufq_5Q3vhv0ygtuBX4ZQQ8UZrA
 
 {
-    "user_id":1,
     "name":"Store This",
     "description":"We have everething",
     "direction":"",
