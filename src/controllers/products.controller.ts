@@ -97,7 +97,7 @@ class ProductsController {
         
         if(!id) throw new Error('Id is undifined');
         
-        const reqSeller = await sellerCtrl.get(id);
+        const reqSeller = await sellerCtrl.get({id});
         const {user_id} = reqSeller.data;
         return user_id;       
     }
