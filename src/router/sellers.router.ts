@@ -6,14 +6,16 @@ const sellerCtrl = new SellersController();
 router.use(express.json());
 
 
-router.get('/', async(_, res:Response) => {
-    const {code, data} = await sellerCtrl.get();
+router.get('/', async(req:Request, res:Response) => {
+    const auth = req.get('authorization');
+    const {code, data} = await sellerCtrl.get({auth});
     res.status(code).json(data);
 });
 
 router.get('/:id', async(req:Request, res:Response) => {
     const id = parseInt(req.params.id);
-    const {code, data} = await sellerCtrl.get(id);
+    const auth = req.get('authorization');
+    const {code, data} = await sellerCtrl.get({auth, id});
     res.status(code).json(data);
 });
 

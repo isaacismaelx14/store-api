@@ -26,9 +26,17 @@ const sellerData = (Seller: seller): queryParam => [
 ];
 
 class SellersController {
-    async get(id?: number): Promise<dataResponse> {
+    async get(data:{auth?:string, id?: number}): Promise<dataResponse> {
+        const {auth, id}= data;
         const options: options = { where: { selector: 'id', value: id } };
-        return await db.select('*', id ? options : null);
+        const resp = await db.select('*', id ? options : null);
+        
+        if(id){
+            if(!auth || !(await jwtCtrl.checkToken(auth, {id, type:2}))) return errors.notAuth;
+            return resp;
+        }
+        if(!auth || !(await jwtCtrl.checkToken(auth, {type:2}))) return errors.notAuth;
+        return resp;
     }
 
     async post(Seller: seller, auth?:string): Promise<dataResponse> {
@@ -64,7 +72,7 @@ class SellersController {
     }
 
     private async getUserId(sellerId:number){
-        const req = await this.get(sellerId);
+        const req = await this.get({id:sellerId});
         const {user_id} = req.data;
         return user_id;
     }
