@@ -32,3 +32,10 @@ GET http://localhost:3001/descriptions/
 GET http://localhost:3001/descriptions/by-product/1
 ### Get one desc
 GET http://localhost:3001/products
+
+### 
+GET http://localhost:3001/requests/seller
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJpYXQiOjE2MjIxMzE5MTN9.XBQv3v3Jd2tR9NWz3Sw18Ixi9E0JCsd3dL4ohQKdDhA
+### 
+GET http://localhost:3001/requests/seller/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJpYXQiOjE2MjIxMzE5MTN9.XBQv3v3Jd2tR9NWz3Sw18Ixi9E0JCsd3dL4ohQKdDhA

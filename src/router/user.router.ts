@@ -14,17 +14,19 @@ router.get('/', async (req:Request, res: Response) => {
     res.status(code).json(data);
 });
 
-router.post('/', async (req: Request, res: Response) => {
-    const {code, data}= await user.post(req.body);
-    res.status(code).json(data);
-});
-
 router.get('/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const auth = req.get('authorization');
     const {code, data} = await user.get(auth, id);
     res.status(code).json(data);
 });
+
+router.post('/', async (req: Request, res: Response) => {
+    const {code, data}= await user.post(req.body);
+    console.log(data);
+    res.status(code).json(data);
+});
+
 
 router.delete('/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);

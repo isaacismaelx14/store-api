@@ -35,3 +35,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
     "new_pwd":"1234",
     "old_pwd":"1234"
 }
+
+###Seller request
+
+PATCH http://localhost:3001/requests/seller/3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJpc2FhY2lzbWFlbHgxNEBnbWFpbC5jb20iLCJpYXQiOjE2MjIxMzE5MTN9.XBQv3v3Jd2tR9NWz3Sw18Ixi9E0JCsd3dL4ohQKdDhA
+
+{
+    "state":"Required"
+}
+     

@@ -9,7 +9,8 @@ interface seller {
   name: string;
   description: string;
   direction: string;
-  rank: number;
+  rank?: number;
+  accepted_by?: number;
   created_date?: Date;
 }
 
@@ -23,6 +24,7 @@ const sellerData = (Seller: seller): queryParam => [
     { selector: 'description', value: Seller.description },
     { selector: 'direction', value: Seller.direction },
     { selector: 'rank', value: Seller.rank },
+    { selector: 'accepted_by', value: Seller.accepted_by },
 ];
 
 class SellersController {
@@ -40,15 +42,15 @@ class SellersController {
     }
 
     async post(Seller: seller, auth?:string): Promise<dataResponse> {
-        const {description,  name, rank} = Seller;
+        const {description,  name,  user_id} = Seller;
 
         if(!auth || !(await jwtCtrl.checkToken(auth))) return errors.notAuth;
         const userId = jwtCtrl.getTokenData(auth).data?.id;
 
         if(!userId)  return errors.allNeeded;
-        Seller.user_id = userId;
+        Seller.accepted_by = userId;
 
-        if(!description || !name || rank === undefined) return errors.allNeeded;
+        if(!description || !name  || user_id === undefined) return errors.allNeeded;
 
         return await db.insert(sellerData(Seller));
         // return errors.create(200, 's'); //for tests    
@@ -57,9 +59,9 @@ class SellersController {
     async update(id: number, Seller: seller, auth?:string): Promise<dataResponse> {
         const {description, direction, name, rank} = Seller;
 
-        if(Seller.id || Seller.user_id) return errors.idCannotChange;
+        if(Seller.id || Seller.user_id || Seller.accepted_by) return errors.idCannotChange;
         if(!auth || !(await jwtCtrl.checkToken(auth, {id:await this.getUserId(id)}))) return errors.notAuth;
-        if(!description && !direction && !name && rank === undefined ) return errors.requestEmpty;
+        if(!description && !direction && !name && rank === undefined  ) return errors.requestEmpty;
         
         return await db.update(sellerData(Seller), { selector: 'id', value: id });
     }
