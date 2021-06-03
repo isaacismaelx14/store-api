@@ -16,17 +16,17 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 **GET**
 
-> http://localhost:3001/users\
+> http://localhost:3001/users \
 > http://localhost:3001/users/${id}
 
 **POST**
 
-> http://localhost:3001/users\
+> http://localhost:3001/users \
 >  http://localhost:3001/users/login
 
 **PATCH**
 
-> http://localhost:3001/users/${id}\
+> http://localhost:3001/users/${id} \
 > http://localhost:3001/users/change-password/${id}
 
 **DELETE**
@@ -39,7 +39,7 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 **GET**
 
-> http://localhost:3001/answer\
+> http://localhost:3001/answer \
 > http://localhost:3001/answer/${id}
 
 **POST**
@@ -48,7 +48,7 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 **PATCH**
 
-> http://localhost:3001/answer/${id}\
+> http://localhost:3001/answer/${id} \
 
 **DELETE**
 
@@ -60,9 +60,9 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 **GET**
 
-> http://localhost:3001/comments\
-> http://localhost:3001/comments/${id}\
-> http://localhost:3001/comments/by-product/${id}\
+> http://localhost:3001/comments \
+> http://localhost:3001/comments/${id} \
+> http://localhost:3001/comments/by-product/${id} \
 > http://localhost:3001/comments/by-user/${id}
 
 **POST**
