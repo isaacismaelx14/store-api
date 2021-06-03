@@ -4,19 +4,22 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 # Index
 
-- [Routes](#Routes)
+- [Routes:](#Routes)
   - [Home](#Home)
   - [User](#User)
   - [Answer](#Answer)
   - [Comments](#Comments)
-- ## [Types](#Types)
-  - [User](#User-1)
   - [Seller](#Seller)
-  - [Question](#Question)
   - [Product](#Product)
+  - [Categories](#Categories)
+- [Types:](#Types)
+  - [User](#User-1)
+  - [Seller](#Seller-1)
+  - [Question](#Question)
+  - [Product](#Product-1)
   - [Description](#Description)
   - [Comment](#Comment)
-  - [Category](#Category-1)
+  - [Category](#Category)
   - [Answer](#Answer-1)
   - [Seller Request](#seller-request)
 
@@ -28,9 +31,9 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 > http://localhost:3001/
 
-## User
-
 ---
+
+## User
 
 **GET**
 
@@ -50,6 +53,27 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 **DELETE**
 
 > http://localhost:3001/users/${id}
+
+---
+
+## Products
+
+**GET**
+
+> http://localhost:3001/products \
+> http://localhost:3001/products/${id}
+
+**POST**
+
+> http://localhost:3001/products
+
+**PATCH**
+
+> http://localhost:3001/products/${id}
+
+**DELETE**
+
+> http://localhost:3001/products/${id}
 
 ---
 
@@ -95,6 +119,71 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 > http://localhost:3001/comments/${id}
 
+---
+
+## Sellers
+
+**GET**
+
+> http://localhost:3001/sellers \
+> http://localhost:3001/sellers/${id}
+
+**POST**
+
+> http://localhost:3001/sellers
+
+**PATCH**
+
+> http://localhost:3001/sellers/${id}
+
+**DELETE**
+
+> http://localhost:3001/sellers/${id}
+
+---
+
+## Categories
+
+**GET**
+
+> http://localhost:3001/categories \
+> http://localhost:3001/categories/${id} \
+> http://localhost:3001/categories/by-product/${id}
+
+**POST**
+
+> http://localhost:3001/categories
+
+**PATCH**
+
+> http://localhost:3001/categories/${id}
+
+**DELETE**
+
+> http://localhost:3001/categories/${id}
+
+---
+
+## Request Seller
+
+**GET**
+
+> http://localhost:3001/requests/seller \
+> http://localhost:3001/requests/seller/${id}
+
+**POST**
+
+> http://localhost:3001/requests/seller \
+> http://localhost:3001/requests/seller/accept/${id}
+
+**PATCH**
+
+> http://localhost:3001/requests/seller/${id}
+
+**DELETE**
+
+> http://localhost:3001/requests/seller/${id}
+
 <!--  -->
 
 # Types
@@ -105,7 +194,7 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 interface IUser {
     id: number;
     names: string;
-    lastnames: string;
+    last_names: string;
     email: string;
     password: string;
     sex: number;
@@ -113,7 +202,7 @@ interface IUser {
     cart: string;
     birthday: Date;
     type: number;
-    createdat: Date;
+    create_date: Date;
 }
 ```
 
