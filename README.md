@@ -8,7 +8,7 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 **GET**
 
-> `http://localhost:3001/`
+> http://localhost:3001/
 
 ## User
 
@@ -16,22 +16,22 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 **GET**
 
-> `http://localhost:3001/users`\
-> `http://localhost:3001/users/${id}`
+> http://localhost:3001/users\
+> http://localhost:3001/users/${id}
 
 **POST**
 
-> `http://localhost:3001/users`\
->  `http://localhost:3001/users/login`
+> http://localhost:3001/users\
+>  http://localhost:3001/users/login
 
 **PATCH**
 
-> `http://localhost:3001/users/${id}`\
-> `http://localhost:3001/users/change-password/${id}`
+> http://localhost:3001/users/${id}\
+> http://localhost:3001/users/change-password/${id}
 
 **DELETE**
 
-> `http://localhost:3001/users/${id}`
+> http://localhost:3001/users/${id}
 
 ---
 
@@ -39,20 +39,20 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 **GET**
 
-> `http://localhost:3001/answer`\
-> `http://localhost:3001/answer/${id}`
+> http://localhost:3001/answer\
+> http://localhost:3001/answer/${id}
 
 **POST**
 
-> `http://localhost:3001/answer`
+> http://localhost:3001/answer
 
 **PATCH**
 
-> `http://localhost:3001/answer/${id}`\
+> http://localhost:3001/answer/${id}\
 
 **DELETE**
 
-> `http://localhost:3001/answer/${id}`
+> http://localhost:3001/answer/${id}
 
 ---
 
@@ -60,22 +60,22 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 **GET**
 
-> `http://localhost:3001/comments`\
-> `http://localhost:3001/comments/${id}`\
-> `http://localhost:3001/comments/by-product/${id}`\
-> `http://localhost:3001/comments/by-user/${id}`
+> http://localhost:3001/comments\
+> http://localhost:3001/comments/${id}\
+> http://localhost:3001/comments/by-product/${id}\
+> http://localhost:3001/comments/by-user/${id}
 
 **POST**
 
-> `http://localhost:3001/comments`
+> http://localhost:3001/comments
 
 **PATCH**
 
-> `http://localhost:3001/comments/${id}`
+> http://localhost:3001/comments/${id}
 
 **DELETE**
 
-> `http://localhost:3001/comments/${id}`
+> http://localhost:3001/comments/${id}
 
 <!--  -->
 
@@ -118,7 +118,7 @@ interface ILogin {
 ```
 interface ISeller {
     id: number;
-    userid: number;
+    user_id: number;
     name:string;
     description:string;
     direction:string;
@@ -133,7 +133,7 @@ interface ISeller {
 ```
 interface IQuestion {
     id: number;
-    productid: number;
+    product_id: number;
     user_id: number;
     question:string;
     star: number;
@@ -162,7 +162,7 @@ interface IProducts {
 ```
 interface IDescription {
     id: number;
-    productid: number;
+    product_id: number;
     color:string;
     brand:string;
     dimensions:string;
@@ -176,7 +176,7 @@ interface IDescription {
 ```
 interface IComment {
     id: number;
-    productid: number;
+    product_id: number;
     user_id: number;
     comment:string;
     star: number;
@@ -198,7 +198,7 @@ interface ICategory {
 ```
 interface IAnswer {
     id: number;
-    parentid: number;
+    parent_id: number;
     user_id: number;
     answer:string;
     created_date:Date;
