@@ -4,15 +4,15 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 # Routes
 
-## `Home`
+## Home
 
 **GET**
 
 > `http://localhost:3001/`
 
----
+## User
 
-## `User`
+---
 
 **GET**
 
@@ -35,7 +35,7 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 ---
 
-## `Answer`
+## Answer
 
 **GET**
 
@@ -56,7 +56,7 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 ---
 
-## `Comments`
+## Comments
 
 **GET**
 
@@ -83,118 +83,139 @@ This is the backend of [React Store](https://github.com/isaacismaelx14/store-rea
 
 ## `User`:
 
-> interface `IUser` {\
-> &nbsp;&nbsp; `id`: **_number_**;\
->  &nbsp;&nbsp; `names`: **_string_**;\
->  &nbsp;&nbsp; `last_names`: **_string_**;\
->  &nbsp;&nbsp; `email`: **_string_**;\
->  &nbsp;&nbsp; `password`: **_string_**;\
->  &nbsp;&nbsp; `sex`: **_number_**;\
->  &nbsp;&nbsp; `direction`: **_string_** | **_undefined_**;\
->  &nbsp;&nbsp; `cart`: **_string_**;\
->  &nbsp;&nbsp; `birthday`: **_Date_**;\
->  &nbsp;&nbsp; `type`: **_number_**;\
->  &nbsp;&nbsp; `created_at`: **_Date_**; \
-> }
+```
+interface IUser {
+    id: number;
+    names: string;
+    lastnames: string;
+    email: string;
+    password: string;
+    sex: number;
+    direction: string | undefined;
+    cart: string;
+    birthday: Date;
+    type: number;
+    createdat: Date;
+}
+```
 
-> interface `IChangePassword` {\
->  &nbsp;&nbsp; `new_pwd`: **_string_**;\
->  &nbsp;&nbsp; `old_pwd`: **_string_**;\
-> }
+```
+interface IChangePassword {
+    new_pwd: string;
+    old_pwd: string;
+}
+```
 
-> interface `ILogin` {\
->  &nbsp;&nbsp; `email`: **_string_**;\
->  &nbsp;&nbsp; `password`: **_string_**;\
-> }
+```
+interface ILogin {
+    email: string;
+    password:string;
+}
+```
 
-## `Seller`:
+## Seller:
 
-> interface `ISeller` {
-> &nbsp;&nbsp; `id`: **_number_**;\
->  &nbsp;&nbsp; `user_id`: **_number_**;\
->  &nbsp;&nbsp; `name`: **_string_**;\
->  &nbsp;&nbsp; `description`: **_string_**;\
->  &nbsp;&nbsp; `direction`: **_string_**;\
->  &nbsp;&nbsp; `rank`: **_number_**;\
->  &nbsp;&nbsp; `accepted_by`: **_number_**;\
->  &nbsp;&nbsp; `created_date`: **_Date_**;\
-> }
+```
+interface ISeller {
+    id: number;
+    userid: number;
+    name:string;
+    description:string;
+    direction:string;
+    rank: number;
+    accepted_by: number;
+    created_date:Date;
+}
+```
 
-## `Question`:
+## Question:
 
-> interface `IQuestion` {\
->  &nbsp;&nbsp; `id`: **_number_**;\
->  &nbsp;&nbsp; `product_id`: **_number_**;\
->  &nbsp;&nbsp; `user_id`: **_number_**;\
->  &nbsp;&nbsp; `question`: **_string_**;\
->  &nbsp;&nbsp; `star`: **_number_**;\
->  &nbsp;&nbsp; `created_date`: **_number_**;\
-> }
+```
+interface IQuestion {
+    id: number;
+    productid: number;
+    user_id: number;
+    question:string;
+    star: number;
+    created_date:number;
+}
+```
 
-## `Product`:
+## Product:
 
-> interface `IProducts` {\
-> &nbsp;&nbsp; `id`: **_number_**;\
-> &nbsp;&nbsp; `picture_id`: **_number_**;\
-> &nbsp;&nbsp; `seller_id`: **_number_**;\
-> &nbsp;&nbsp; `category_id`: **_number_**;\
-> &nbsp;&nbsp; `title`: **_string_**;\
-> &nbsp;&nbsp; `price`: DoubleRange;\
-> &nbsp;&nbsp; `stock`: **_number_**;\
-> &nbsp;&nbsp; `about`: **_string_**;\
-> &nbsp;&nbsp; `tags`: **_string_**;\
-> &nbsp;&nbsp; `created_date`: **_Date_**;\
-> }
+```
+interface IProducts {
+    id: number;pictureid: number
+    seller_id: number;
+    category_id: number;
+    title:string;
+    price: DoubleRange;
+    stock: number;
+    about:string;
+    tags:string;
+    created_date:Date;
+}
+```
 
-## `Description`:
+## Description:
 
-> interface `IDescription` {\
-> &nbsp;&nbsp; `id`: **_number_**;\
-> &nbsp;&nbsp; `product_id`: **_number_**;\
-> &nbsp;&nbsp; `color`: **_string_**;\
-> &nbsp;&nbsp; `brand`: **_string_**;\
-> &nbsp;&nbsp; `dimensions`: **_string_**;\
-> &nbsp;&nbsp; `weigth`: **_string_**;\
-> &nbsp;&nbsp; `other`: **_string_**;\
-> }
+```
+interface IDescription {
+    id: number;
+    productid: number;
+    color:string;
+    brand:string;
+    dimensions:string;
+    weigth:string;
+    other:string;
+}
+```
 
-## `Comment`:
+## Comment:
 
-> interface `IComment` {\
-> &nbsp;&nbsp; `id`: **_number_**;\
-> &nbsp;&nbsp; `product_id`: **_number_**;\
-> &nbsp;&nbsp; `user_id`: **_number_**;\
-> &nbsp;&nbsp; `comment`: **_string_**;\
-> &nbsp;&nbsp; `star`: **_number_**;\
-> &nbsp;&nbsp; `created_date`: **_number_**;\
-> }
+```
+interface IComment {
+    id: number;
+    productid: number;
+    user_id: number;
+    comment:string;
+    star: number;
+    created_date:number;
+}
+```
 
-## `Category`:
+## Category:
 
-> interface `ICategory` {\
-> &nbsp;&nbsp; `id`: **_number_**;\
-> &nbsp;&nbsp; `category`: **_string_**;\
-> }
+```
+interface ICategory {
+    id: number;
+    category:string;
+}
+```
 
-## `Answer`:
+## Answer:
 
-> interface `IAnswer` {\
-> &nbsp;&nbsp; `id`: **_number_**;\
-> &nbsp;&nbsp; `parent_id`: **_number_**;\
-> &nbsp;&nbsp; `user_id`: **_number_**;\
-> &nbsp;&nbsp; `answer`: **_string_**;\
-> &nbsp;&nbsp; `created_date`: **_Date_**;\
-> }
+```
+interface IAnswer {
+    id: number;
+    parentid: number;
+    user_id: number;
+    answer:string;
+    created_date:Date;
+}
+```
 
-## `Seller Request`:
+## Seller Request:
 
-> interface `ISellerRequest` {\
-> &nbsp;&nbsp; `id`: **_number_**;\
-> &nbsp;&nbsp; `user_id`: **_number_**;\
-> &nbsp;&nbsp; `name`: **_string_**;\
-> &nbsp;&nbsp; `description`: **_string_**;\
-> &nbsp;&nbsp; `direction`: **_string_**;\
-> &nbsp;&nbsp; `state`: **_string_**;\
-> &nbsp;&nbsp; `admin_message`: **_string_**;\
-> &nbsp;&nbsp; `created_date`: **_Date_**;\
-> }
+```
+interface ISellerRequest {
+    id: number;
+    user_id: number;
+    name:string;
+    description:string;
+    direction:string;
+    state:string;
+    admin_message:string;
+    created_date:Date;
+}
+```
