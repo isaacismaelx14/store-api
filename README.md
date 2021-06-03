@@ -2,6 +2,24 @@
 
 This is the backend of [React Store](https://github.com/isaacismaelx14/store-react).
 
+# Index
+
+- [Routes](#Routes)
+  - [Home](#Home)
+  - [User](#User)
+  - [Answer](#Answer)
+  - [Comments](#Comments)
+- ## [Types](#Types)
+  - [User](#User-1)
+  - [Seller](#Seller)
+  - [Question](#Question)
+  - [Product](#Product)
+  - [Description](#Description)
+  - [Comment](#Comment)
+  - [Category](#Category-1)
+  - [Answer](#Answer-1)
+  - [Seller Request](#seller-request)
+
 # Routes
 
 ## Home
