@@ -2,12 +2,6 @@ import { config } from './database/';
 import dotenv from 'dotenv';
 
 dotenv.config();
-// const dbConfig: config = {
-//     host: '192.168.1.3',
-//     user: process.env.USER_DATABASE || 'tostore',
-//     password: process.env.PWD_DATABASE || 'Admin.st0re.com',
-//     database: 'store_db',
-// };
 
 const dbConfig: config = {
     host: 'localhost',
